@@ -8,9 +8,22 @@ from http import HTTPStatus
 from routes.url import urlRouter
 from routes.user import userRouter
 
+tags_metadata = [
+    {
+        "name": "users",
+        "description": "User level operations.",
+    },
+    {
+        "name": "urls",
+        "description": "Create and manage short URLs.",
+    },
+]
+
 # Application Initialization
-app = FastAPI()
+app = FastAPI(openapi_tags=tags_metadata)
 app.middleware(CORSMiddleware)
+
+# Router Initialization
 app.include_router(urlRouter, tags=["url"])
 app.include_router(userRouter, tags=["user"])
 
@@ -19,8 +32,9 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
+# Root Route
 @app.get("/")
-def root(request: Request):
+async def root(request: Request):
     return templates.TemplateResponse(
         "index.html",
         {
