@@ -1,32 +1,54 @@
-from typing import Optional
 from datetime import datetime
-from fastapi import HTTPException
-from jose import jwt, JWTError
+from sqlalchemy.orm import Session
+from exceptions.exceptions import IncorrectPasswordException, UserDoesNotExistException
+from models.models import User
+from passlib.context import CryptContext
+from jose import JWTError, jwt
 
-# JWT Configuration
-SECRET_KEY = "9ryn23895v2gj4912g34n1x014v24c2m04x"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRY = 30
+from models.schemas import LoginForm
 
 
-def create_token(data: dict, expires=Optional[int]):
-    to_encode = data.copy()
-    if expires:
-        to_encode.update({"exp": datetime.now() + expires})
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def hashPassword(password: str) -> str:
+    """
+    Hash a password for the first time, with a randomly-generated salt.
+    """
+
+    return bcrypt_context.hash(password)
+
+
+def authenticateUser(formData: LoginForm, db: Session) -> User:
+    """
+    Check if user exists and if password is correct.
+    """
+
+    user = db.query(User).filter(User.username == formData.username).first()
+    if not user:
+        raise UserDoesNotExistException()
     else:
-        to_encode.update({"exp": datetime.now() + ACCESS_TOKEN_EXPIRY})
+        if not bcrypt_context.verify(formData.password, user.password):
+            raise IncorrectPasswordException()
+        else:
+            return user
 
-    jwtToken = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return jwtToken
+
+SECRET_KEY = "oirhm34r890c4wehmvvn87532g48c237rg0m4c712x12mwevm0rhx102xmvnh0x1384310x1weorth8eovt"
+ALGORITHM = "HS256"
 
 
-def decode_token(token: str):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
-    except JWTError:
-        return HTTPException(
-            status_code=401,
-            detail="Invalid credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+def createAccessToken(user: User, expires_in: int) -> str:
+    """
+    Creates an access token for the requested user, which will expire in the given amount of time.
+    """
+
+    expires = datetime.utcnow() + expires_in
+    encoded_data = {
+        "sub": user.username,
+        "id": str(user.id),
+        "exp": expires,
+    }
+
+    encoded_jwt = jwt.encode(encoded_data, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt

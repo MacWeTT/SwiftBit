@@ -10,11 +10,11 @@ from routes.user import userRouter
 
 tags_metadata = [
     {
-        "name": "users",
+        "name": "Users",
         "description": "User level operations.",
     },
     {
-        "name": "urls",
+        "name": "Urls",
         "description": "Create and manage short URLs.",
     },
 ]
@@ -24,8 +24,8 @@ app = FastAPI(openapi_tags=tags_metadata)
 app.middleware(CORSMiddleware)
 
 # Router Initialization
-app.include_router(urlRouter, tags=["url"])
-app.include_router(userRouter, tags=["user"])
+app.include_router(urlRouter, tags=["Urls"])
+app.include_router(userRouter, tags=["Users"])
 
 # Template and Static File Initialization
 templates = Jinja2Templates(directory="templates")
