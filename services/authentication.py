@@ -11,6 +11,15 @@ from models.schemas import LoginForm
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+def checkExistingUser(username: str, db: Session) -> bool:
+    """
+    Check if user exists in the database.
+    """
+
+    user = db.query(User).filter(User.username == username).first()
+    return True if user else False
+
+
 def hashPassword(password: str) -> str:
     """
     Hash a password for the first time, with a randomly-generated salt.

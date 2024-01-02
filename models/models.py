@@ -9,21 +9,22 @@ class User(Base):
     username = Column(String, unique=True)
     password = Column(String)
 
-    urls = relationship("ShortenedUrl", back_populates="User")
 
-    def __repr__(self):
-        return f"<User {self.username}>"
+# urls = relationship("ShortenedUrl", back_populates="created_by")
+
+# def __repr__(self):
+#     return f"<User {self.username}>"
 
 
-class ShortenedUrl(Base):
-    __tablename__ = "shortened_url"
+# class ShortenedUrl(Base):
+#     __tablename__ = "shortened_url"
 
-    url = Column(String, unique=True)
-    short_url = Column(String, unique=True)
+#     url = Column(String, unique=True)
+#     short_url = Column(String, unique=True)
 
-    user_id = Column(Integer, ForeignKey("users.id"))
+#     user_id = Column(Integer, ForeignKey("user.id"))
 
-    created_by = relationship("User", back_populates="ShortenedUrl")
+#     created_by = relationship("User", back_populates="urls")
 
-    def __repr__(self):
-        return f"<ShortenedURL {self.url}>"
+#     def __repr__(self):
+#         return f"<ShortenedURL {self.url}>"

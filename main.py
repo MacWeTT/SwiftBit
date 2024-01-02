@@ -1,8 +1,12 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
-from http import HTTPStatus
+
+# Initialize DB
+from database.connection import Base, engine
+
+Base.metadata.create_all(bind=engine)
 
 # Router imports
 from routes.url import urlRouter
@@ -40,7 +44,7 @@ async def root(request: Request):
         {
             "request": request,
             "response": {
-                "status": HTTPStatus.OK,
+                "status": status.HTTP_200_OK,
                 "message": "All API services are up and running.",
             },
         },

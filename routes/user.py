@@ -13,7 +13,12 @@ from database.databaseUtil import db_dependency
 from dto.requestDTO import CreateUserRequestDTO
 
 # Services
-from services.authentication import authenticateUser, createAccessToken, hashPassword
+from services.authentication import (
+    authenticateUser,
+    checkExistingUser,
+    createAccessToken,
+    hashPassword,
+)
 
 # Exceptions
 from exceptions.exceptions import UserAlreadyExistsException
@@ -23,25 +28,28 @@ userRouter = APIRouter(prefix="/user")
 oauth_bearer = OAuth2PasswordBearer(tokenUrl="user/login")
 
 
-@userRouter.post("/register", status_code=status.HTTP_201_CREATED)
+@userRouter.post("/register")
 async def create_user(db: db_dependency, user_request: CreateUserRequestDTO):
     try:
-        user = User(
-            username=user_request.username,
-            password=hashPassword(user_request.password),
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        return CreateUserResponseDTO(
-            {
-                "message": "User created",
-                "username": user.username,
-            },
-        )
+        if await checkExistingUser(user_request.username, db):
+            raise UserAlreadyExistsException()
+        else:
+            user = User(
+                username=user_request.username,
+                password=await hashPassword(user_request.password),
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return CreateUserResponseDTO(
+                {
+                    "status": status.HTTP_201_CREATED,
+                    "message": "User created successfully. Please login to continue.",
+                    "username": user.username,
+                },
+            )
     except Exception as e:
         print(e)
-        raise UserAlreadyExistsException()
 
 
 @userRouter.post("/login", response_model=LoginResponseDTO)
