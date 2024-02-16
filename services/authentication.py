@@ -43,7 +43,7 @@ def authenticateUser(formData: LoginForm, db: Session) -> User:
             return user
 
 
-SECRET_KEY = "oirhm34r890c4wehmvvn87532g48c237rg0m4c712x12mwevm0rhx102xmvnh0x1384310x1weorth8eovt"
+SECRET_KEY = "c7be378f33d682002ba1784011a6edfa535e18a50994227de1647d8d5fd728e7"
 ALGORITHM = "HS256"
 
 

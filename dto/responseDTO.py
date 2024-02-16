@@ -9,3 +9,7 @@ class LoginResponseDTO(BaseModel):
 class CreateUserResponseDTO(BaseModel):
     message: str
     username: str
+
+
+class ResponseDTO(BaseModel):
+    message: str
