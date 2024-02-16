@@ -2,11 +2,10 @@ from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+import logging
 
-# Initialize DB
-from database.connection import Base, engine
-
-Base.metadata.create_all(bind=engine)
+# Used to silence Bcrypt warning log
+logging.getLogger("passlib").setLevel(logging.ERROR)
 
 # Router imports
 from routes.url import urlRouter
