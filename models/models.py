@@ -1,11 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, true
 from sqlalchemy.orm import relationship
-from database.connection import Base
+from database.connection import BaseModel, Base
 
 
 class User(Base):
-    __tablename__ = "users"
-
     username = Column(String, unique=True)
     password = Column(String)
 

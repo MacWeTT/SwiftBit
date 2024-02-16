@@ -27,6 +27,7 @@ tags_metadata = [
 app = FastAPI(openapi_tags=tags_metadata)
 app.middleware(CORSMiddleware)
 
+
 # Router Initialization
 app.include_router(urlRouter, tags=["Urls"])
 app.include_router(userRouter, tags=["Users"])

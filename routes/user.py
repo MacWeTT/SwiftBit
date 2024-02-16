@@ -31,25 +31,23 @@ oauth_bearer = OAuth2PasswordBearer(tokenUrl="user/login")
 @userRouter.post("/register")
 async def create_user(db: db_dependency, user_request: CreateUserRequestDTO):
     try:
-        if await checkExistingUser(user_request.username, db):
+        if checkExistingUser(user_request.username, db):
             raise UserAlreadyExistsException()
         else:
             user = User(
                 username=user_request.username,
-                password=await hashPassword(user_request.password),
+                password=hashPassword(user_request.password),
             )
             db.add(user)
             db.commit()
             db.refresh(user)
             return CreateUserResponseDTO(
-                {
-                    "status": status.HTTP_201_CREATED,
-                    "message": "User created successfully. Please login to continue.",
-                    "username": user.username,
-                },
+                message="User created successfully. Please login to continue.",
+                username=user.username,
             )
     except Exception as e:
         print(e)
+        raise e
 
 
 @userRouter.post("/login", response_model=LoginResponseDTO)
@@ -61,14 +59,9 @@ async def login(
         user = authenticateUser(form_data, db)
         token = createAccessToken(user, timedelta(minutes=30))
         return LoginResponseDTO(
-            {
-                "access_token": token,
-                "token_type": "bearer",
-            },
+            access_token=token,
+            token_type="bearer",
         )
     except Exception as e:
         print(e)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-        )
+        raise e
