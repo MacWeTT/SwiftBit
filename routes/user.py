@@ -1,5 +1,4 @@
-from email import message
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 from dto.responseDTO import CreateUserResponseDTO, LoginResponseDTO, ResponseDTO
 from fastapi import Depends, HTTPException, APIRouter
 from datetime import timedelta
@@ -26,8 +25,6 @@ from services.authentication import (
 from exceptions.exceptions import UserAlreadyExistsException, UserDoesNotExistException
 
 userRouter = APIRouter(prefix="/user")
-
-oauth_bearer = OAuth2PasswordBearer(tokenUrl="user/login")
 
 
 @userRouter.post("/register")

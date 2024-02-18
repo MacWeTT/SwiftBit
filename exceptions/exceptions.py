@@ -18,9 +18,14 @@ class UserAlreadyExistsException(BaseException):
     """
 
     def __init__(self):
-        super().__init__(status_code=400, detail="User already exists")
+        super().__init__(
+            status_code=400, detail="User already exists. Please try to login instead."
+        )
 
 
 class IncorrectPasswordException(BaseException):
     def __init__(self):
-        super().__init__(status_code=400, detail="Incorrect password")
+        super().__init__(
+            status_code=400,
+            detail="Incorrect password. Make sure your password is correct.",
+        )

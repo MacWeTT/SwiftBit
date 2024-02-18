@@ -1,7 +1,8 @@
 from .connection import SessionLocal
+from sqlalchemy.orm import Session
 from fastapi import Depends
 from typing import Annotated
-from sqlalchemy.orm import Session
+from services.authentication import getCurrentUser
 
 
 def get_db():
@@ -13,4 +14,4 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-
+user_dependency = Annotated[dict, Depends(getCurrentUser)]

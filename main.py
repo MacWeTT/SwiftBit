@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, openapi, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,19 +11,38 @@ logging.getLogger("passlib").setLevel(logging.ERROR)
 from routes.url import urlRouter
 from routes.user import userRouter
 
-tags_metadata = [
-    {
-        "name": "Users",
-        "description": "User level operations.",
+# Database functions
+from database.connection import engine, Base
+
+Base.metadata.create_all(bind=engine)
+
+apiParams = {
+    "debug": True,
+    "title": "SwiftBit API",
+    "summary": "SwiftBit is a FastAPI powered service that can shorten your urls.",
+    "description": "Will be added soon.",
+    "version": "0.0.1",
+    "openapi_tags": [
+        {
+            "name": "Users",
+            "description": "User level operations.",
+        },
+        {
+            "name": "Urls",
+            "description": "Create and manage short URLs.",
+        },
+    ],
+    "contact": {
+        "name": "MacWeTT",
+        "url": "https://github.com/MacWeTT",
+        "email": "manasbajpai18@gmail.com",
     },
-    {
-        "name": "Urls",
-        "description": "Create and manage short URLs.",
-    },
-]
+    "license_info": {},
+}
+
 
 # Application Initialization
-app = FastAPI(openapi_tags=tags_metadata)
+app = FastAPI(**apiParams)
 app.middleware(CORSMiddleware)
 
 

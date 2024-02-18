@@ -1,14 +1,18 @@
-from datetime import datetime
-from sqlalchemy.orm import Session
 from exceptions.exceptions import IncorrectPasswordException, UserDoesNotExistException
-from models.models import User
+from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from jose import JWTError, jwt
-
+from sqlalchemy.orm import Session
 from models.schemas import LoginForm
+from jose import JWTError, jwt
+from models.models import User
+from datetime import datetime
+from typing import Annotated
+from starlette import status
+from fastapi import Depends, HTTPException
 
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth_bearer = OAuth2PasswordBearer(tokenUrl="user/login")
 
 
 def checkExistingUser(username: str, db: Session) -> bool:
@@ -61,3 +65,22 @@ def createAccessToken(user: User, expires_in: int) -> str:
 
     encoded_jwt = jwt.encode(encoded_data, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def getCurrentUser(token: Annotated[str, Depends(oauth_bearer)]):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        user_id = payload.get("id")
+        if username is None or user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate user.",
+            )
+        return {"username": username, "id": user_id}
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate user.",
+        )
