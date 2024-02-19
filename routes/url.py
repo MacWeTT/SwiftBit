@@ -28,11 +28,11 @@ async def shorten_new_url(user: user_dependency, db: db_dependency, request_url:
         shortened_url = (
             db.query(ShortenedUrl).filter(ShortenedUrl.url == request_url).first()
         )
-        current_user = getCurrentUser(user)
+        # current_user = getCurrentUser(user)
         if shortened_url:
             message = "Shortened URL for the requested URL already exists."
         else:
-            shortened_url = createNewShortenedUrl(request_url, current_user, db)
+            shortened_url = createNewShortenedUrl(request_url, db)
             message = "Requested URl has been shortened."
 
         return ShortenUrlResponseDTO(

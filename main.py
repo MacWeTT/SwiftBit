@@ -1,9 +1,11 @@
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
-import logging
+from models.models import ShortenedUrl
+import logging, os
 
 # Load Environment variables
 load_dotenv()
@@ -17,6 +19,7 @@ from routes.user import userRouter
 
 # Database functions
 from database.connection import engine, Base
+from database.databaseUtil import db_dependency
 
 
 apiParams = {
@@ -75,3 +78,18 @@ async def root(request: Request):
             },
         },
     )
+
+
+# Service Route
+@app.get("/{url}")
+async def getUrl(url: str, db: db_dependency):
+    try:
+        requestedURL = f"{os.environ.get("API_URL")}/{url}"
+        fullURL = db.query(ShortenedUrl).filter(ShortenedUrl.short_url == requestedURL).first().url
+        if not fullURL:
+            raise HTTPException(status_code=404, detail="URL Not Found")
+
+        return RedirectResponse(url=f"{fullURL}", status_code=status.HTTP_302_FOUND)
+    except Exception as e:
+        print(e)
+        raise e
