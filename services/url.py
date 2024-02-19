@@ -6,16 +6,19 @@ import uuid, os
 from services.authentication import getCurrentUser
 
 
-def createNewShortenedUrl(original_url: str, db: db_dependency) -> str:
-    shortened_identifier = str(uuid.uuid4())[:8]
-    base_shortened_url = os.environ.get("API_URL")
-    shortened_url: str = f"{base_shortened_url}/{shortened_identifier}"
+def createNewShortenedUrl(
+    original_url: str, user_id: int, db: db_dependency
+) -> ShortenedUrl:
 
-    new_shortened_url = ShortenedUrl(
+    identifier = str(uuid.uuid4())[:8]
+    baseURL = os.environ.get("API_URL")
+    shortenedURL = f"{baseURL}/{identifier}"
+
+    newShortenedUrl = ShortenedUrl(
         url=original_url,
-        short_url=shortened_url,
-        # user_id=current_user.id
+        short_url=shortenedURL,
+        user_id=user_id,
     )
-    saveToDatabase(db, new_shortened_url)
+    saveToDatabase(db, newShortenedUrl)
 
-    return shortened_url
+    return newShortenedUrl

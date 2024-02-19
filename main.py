@@ -1,10 +1,10 @@
+from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.staticfiles import StaticFiles
-from dotenv import load_dotenv
 from models.models import ShortenedUrl
+from dotenv import load_dotenv
 import logging, os
 
 # Load Environment variables
@@ -83,9 +83,24 @@ async def root(request: Request):
 # Service Route
 @app.get("/{url}")
 async def getUrl(url: str, db: db_dependency):
+    """
+    This is the core URL of the application.
+
+    Usage: 'http://localhost:8000/{x}'
+
+    Here, x is the unique UUID of your URL that has been shortened by the server.
+
+    If the URL is correct, you will be redirected correctly to your requested URL.
+    """
+
     try:
-        requestedURL = f"{os.environ.get("API_URL")}/{url}"
-        fullURL = db.query(ShortenedUrl).filter(ShortenedUrl.short_url == requestedURL).first().url
+        requestedURL = f"{os.environ.get('API_URL')}/{url}"
+        fullURL = (
+            db.query(ShortenedUrl)
+            .filter(ShortenedUrl.short_url == requestedURL)
+            .first()
+            .url
+        )
         if not fullURL:
             raise HTTPException(status_code=404, detail="URL Not Found")
 

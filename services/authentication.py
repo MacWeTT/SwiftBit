@@ -1,3 +1,4 @@
+from dto.responseDTO import GetUserResponseDTO
 from exceptions.exceptions import IncorrectPasswordException, UserDoesNotExistException
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
@@ -72,15 +73,28 @@ def getCurrentUser(token: Annotated[str, Depends(oauth_bearer)]):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
         user_id = payload.get("id")
+        exp = payload.get("exp")
+
         if username is None or user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate user.",
             )
-        return {"username": username, "id": user_id}
+
+        if datetime.utcnow() > datetime.utcfromtimestamp(exp):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Access token has expired. Please login again.",
+            )
+
+        return GetUserResponseDTO(id=user_id, username=username)
 
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate user.",
         )
+
+    except Exception as e:
+        print(e)
+        raise e

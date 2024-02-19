@@ -1,6 +1,10 @@
 from pydantic import BaseModel
 
 
+class ResponseDTO(BaseModel):
+    message: str
+
+
 class LoginResponseDTO(BaseModel):
     access_token: str
     token_type: str
@@ -11,8 +15,14 @@ class CreateUserResponseDTO(BaseModel):
     username: str
 
 
-class ResponseDTO(BaseModel):
-    message: str
+class GetUserResponseDTO(BaseModel):
+    id: int
+    username: str
+
+
+class GetAllShortenedUrlsDTO(BaseModel):
+    short_url: str
+    url: str
 
 
 class ShortenUrlResponseDTO(BaseModel):
