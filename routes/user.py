@@ -38,10 +38,8 @@ async def create_user(db: db_dependency, user_request: CreateUserRequestDTO):
                 password=hashPassword(user_request.password),
             )
             saveToDatabase(db, user)
-            return CreateUserResponseDTO(
-                message="User created successfully. Please login to continue.",
-                username=user.username,
-            )
+            message = "User created successfully. Please login to continue."
+            return CreateUserResponseDTO(message=message, username=user.username)
     except Exception as e:
         print(e)
         raise e
@@ -55,10 +53,7 @@ async def login(
     try:
         user = authenticateUser(form_data, db)
         token = createAccessToken(user, timedelta(minutes=30))
-        return LoginResponseDTO(
-            token_type="Bearer",
-            access_token=token,
-        )
+        return LoginResponseDTO(token_type="Bearer", access_token=token)
     except Exception as e:
         print(e)
         raise e
@@ -71,9 +66,8 @@ async def delete_user(db: db_dependency, request: DelelteUserRequestDTO):
         if user:
             query = db.query(User).filter(User.username == request.username).first()
             deleteFromDatabase(db, query)
-            return ResponseDTO(
-                message=f"User {request.username} has been deleted successfully."
-            )
+            message = f"User {request.username} has been deleted successfully."
+            return ResponseDTO(message=message)
         else:
             raise UserDoesNotExistException()
     except Exception as e:

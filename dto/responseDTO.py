@@ -13,3 +13,9 @@ class CreateUserResponseDTO(BaseModel):
 
 class ResponseDTO(BaseModel):
     message: str
+
+
+class ShortenUrlResponseDTO(BaseModel):
+    message: str
+    original_url: str
+    shortened_url: str

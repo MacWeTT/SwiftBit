@@ -1,8 +1,12 @@
-from fastapi import FastAPI, Request, openapi, status
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI, Request, status
+from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
 import logging
+
+# Load Environment variables
+load_dotenv()
 
 # Used to silence Bcrypt warning log
 logging.getLogger("passlib").setLevel(logging.ERROR)
@@ -14,7 +18,6 @@ from routes.user import userRouter
 # Database functions
 from database.connection import engine, Base
 
-Base.metadata.create_all(bind=engine)
 
 apiParams = {
     "debug": True,
@@ -37,11 +40,15 @@ apiParams = {
         "url": "https://github.com/MacWeTT",
         "email": "manasbajpai18@gmail.com",
     },
-    "license_info": {},
+    "license_info": {
+        "name": "MIT License",
+        "url": "https://github.com/MacWeTT/SwiftBit/blob/main/LICENSE.txt",
+    },
 }
 
 
 # Application Initialization
+Base.metadata.create_all(bind=engine)
 app = FastAPI(**apiParams)
 app.middleware(CORSMiddleware)
 
