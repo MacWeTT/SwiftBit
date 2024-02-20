@@ -12,7 +12,7 @@ A random short **UUID** is generated for a request object. When the shortened UR
 
 ## Base URL
 
-The base URL for accessing the service endpoints is `TBA`. <br>
+The base URL for accessing the service endpoints is https://swiftbit.onrender.com .<br>
 
 You can also access the **API Docs** on `/docs` powered by **SwaggerUI** or on `/redoc` powered by **ReDoc**.
 
@@ -52,11 +52,11 @@ Authentication is required for creating and managing urls to ensure the security
   ```json
   [
     {
-      "short_url": "http://localhost:8000/df200df7",
+      "short_url": "https://swiftbit.onrender.com/df200df7",
       "url": "https://leetcode.com/MacWeTT/"
     },
     {
-      "short_url": "http://localhost:8000/175a872c",
+      "short_url": "https://swiftbit.onrender.com/175a872c",
       "url": "https://www.ign.com/wikis/red-dead-redemption-2/Walkthrough"
     }
   ]
@@ -77,8 +77,8 @@ Authentication is required for creating and managing urls to ensure the security
   ```json
   {
     "message": "Requested URL has been shortened.",
-    "original_url": "https://leetcode.com/MacWeTT/",
-    "shortened_url": "http://localhost:8000/df200df7"
+    "original_url": "https://www.ign.com/wikis/red-dead-redemption-2/Walkthrough",
+    "shortened_url": "https://swiftbit.onrender.com/99d72426"
   }
   ```
 
