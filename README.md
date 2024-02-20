@@ -76,10 +76,10 @@ Authentication is required for creating and managing urls to ensure the security
 - **Response Body:**
   ```json
   {
-  "message": "Requested URL has been shortened.",
-  "original_url": "https://www.ign.com/wikis/red-dead-redemption-2/Walkthrough",
-  "shortened_url": "https://swiftbit.onrender.com/99d72426"
-}
+    "message": "Requested URL has been shortened.",
+    "original_url": "https://www.ign.com/wikis/red-dead-redemption-2/Walkthrough",
+    "shortened_url": "https://swiftbit.onrender.com/99d72426"
+  }
   ```
 
 ### Delete URL
