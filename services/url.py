@@ -3,16 +3,15 @@ from database.dbFuncs import saveToDatabase
 from models.models import ShortenedUrl
 import uuid, os
 
-from services.authentication import getCurrentUser
-
 
 def createNewShortenedUrl(
     original_url: str, user_id: int, db: db_dependency
 ) -> ShortenedUrl:
-
+    """
+    Shortens a requested URL.
+    """
     identifier = str(uuid.uuid4())[:8]
-    baseURL = os.environ.get("API_URL")
-    shortenedURL = f"{baseURL}/{identifier}"
+    shortenedURL = f"{os.environ.get('API_URL')}/{identifier}"
 
     newShortenedUrl = ShortenedUrl(
         url=original_url,

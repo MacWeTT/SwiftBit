@@ -1,15 +1,20 @@
-from dto.responseDTO import GetUserResponseDTO
 from exceptions.exceptions import IncorrectPasswordException, UserDoesNotExistException
 from fastapi.security import OAuth2PasswordBearer
+from dto.responseDTO import GetUserResponseDTO
+from fastapi import Depends, HTTPException
 from passlib.context import CryptContext
-from sqlalchemy.orm import Session
 from models.schemas import LoginForm
+from sqlalchemy.orm import Session
 from jose import JWTError, jwt
 from models.models import User
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Optional
 from starlette import status
-from fastapi import Depends, HTTPException
+import os
+
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = os.environ.get("ALGORITHM")
 
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -48,10 +53,6 @@ def authenticateUser(formData: LoginForm, db: Session) -> User:
             return user
 
 
-SECRET_KEY = "c7be378f33d682002ba1784011a6edfa535e18a50994227de1647d8d5fd728e7"
-ALGORITHM = "HS256"
-
-
 def createAccessToken(user: User, expires_in: int) -> str:
     """
     Creates an access token for the requested user, which will expire in the given amount of time.
@@ -68,12 +69,19 @@ def createAccessToken(user: User, expires_in: int) -> str:
     return encoded_jwt
 
 
-def getCurrentUser(token: Annotated[str, Depends(oauth_bearer)]):
+def getCurrentUser(
+    token: Annotated[str, Depends(oauth_bearer)]
+) -> Optional[GetUserResponseDTO]:
+    """
+    Middleware function of the application to check whether the user is authenticated or not.
+
+    Returns the user's id and username if access token is valid, else raises an exception.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        user_id = payload.get("id")
-        exp = payload.get("exp")
+        username: str = payload.get("sub")
+        user_id: int = payload.get("id")
+        exp: int = payload.get("exp")
 
         if username is None or user_id is None:
             raise HTTPException(
@@ -86,7 +94,6 @@ def getCurrentUser(token: Annotated[str, Depends(oauth_bearer)]):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Access token has expired. Please login again.",
             )
-
         return GetUserResponseDTO(id=user_id, username=username)
 
     except JWTError:
@@ -96,5 +103,4 @@ def getCurrentUser(token: Annotated[str, Depends(oauth_bearer)]):
         )
 
     except Exception as e:
-        print(e)
-        raise e
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"{e}")

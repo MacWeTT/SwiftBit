@@ -9,7 +9,7 @@ class BaseException(HTTPException):
 
 class UserDoesNotExistException(BaseException):
     def __init__(self):
-        super().__init__(status_code=404, detail="User does not exist")
+        super().__init__(status_code=404, detail="Invalid token or user does not exist")
 
 
 class UserAlreadyExistsException(BaseException):

@@ -1,8 +1,8 @@
+from services.authentication import getCurrentUser
 from .connection import SessionLocal
 from sqlalchemy.orm import Session
-from fastapi import Depends
 from typing import Annotated
-from services.authentication import getCurrentUser
+from fastapi import Depends
 
 
 def get_db():

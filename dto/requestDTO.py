@@ -17,5 +17,5 @@ class CreateUserRequestDTO(BaseModel):
     password: str
 
 
-class DelelteUserRequestDTO(BaseModel):
+class EditUserRequestDTO(BaseModel):
     username: str
