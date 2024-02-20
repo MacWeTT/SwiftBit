@@ -19,7 +19,7 @@ class ShortenedUrl(Base):
     url = Column(String, unique=True)
     short_url = Column(String, unique=True)
 
-    user_id = Column(Integer, ForeignKey("user.id"))
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     created_by = relationship("User", back_populates="urls")
 
     def __repr__(self):
