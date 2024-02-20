@@ -23,8 +23,7 @@ apiParams = {
     "debug": os.environ.get("DEBUG", False),
     "title": "SwiftBit API",
     "summary": "SwiftBit is a FastAPI powered service that can shorten your urls.",
-    "description": "Will be added soon.",
-    "version": "0.0.1",
+    "version": "1.0",
     "openapi_tags": [
         {
             "name": "Root",

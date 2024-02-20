@@ -137,7 +137,19 @@ Make sure your virtual environment is activated before installing the dependenci
 pip install -r requirements.txt
 ```
 
-### 4. Run the application
+### 4. Initialize Environment Variables
+
+Next, create a **.env** file in the root directory and add the following keys to it:
+
+```env
+API_URL="http://localhost:8000"
+ALGORITHM = "YOUR_JWT_ALGORITHM"
+SECRET_KEY = "YOUR_SECRET_KEY"
+```
+
+If you don't have a secret key, you can generate one for yourself using a script provided with the application and input that here.
+
+### 5. Run the application
 
 Finally, run the application by using this command:
 
@@ -145,4 +157,4 @@ Finally, run the application by using this command:
 uvicorn main:app --reload
 ```
 
-This will run the uvicorn server on port **8000**.
+This will run the uvicorn server on port **8000**, given everything is set up flawlessly :)
