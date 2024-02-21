@@ -1,4 +1,4 @@
-from services.authentication import getCurrentUser
+from services.authentication import getCurrentUser, getOptionalCurrentUser
 from .connection import SessionLocal
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -15,3 +15,4 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(getCurrentUser)]
+optional_user = Annotated[dict, Depends(getOptionalCurrentUser)]

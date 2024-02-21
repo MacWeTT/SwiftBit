@@ -1,5 +1,5 @@
 from dto.responseDTO import ResponseDTO, ShortenUrlResponseDTO, GetAllShortenedUrlsDTO
-from database.databaseUtil import user_dependency, db_dependency
+from database.databaseUtil import user_dependency, db_dependency, optional_user
 from database.dbFuncs import deleteFromDatabase
 from fastapi import APIRouter, HTTPException
 from models.models import ShortenedUrl
@@ -33,7 +33,7 @@ async def get_user_urls(user: user_dependency, db: db_dependency):
 async def shorten_new_url(
     db: db_dependency,
     request_url: str,
-    user: Optional[user_dependency] = None,
+    user: optional_user,
 ):
     """
     Accepts a request url and returns a shortened URL.
@@ -47,6 +47,7 @@ async def shorten_new_url(
         if shortened_url:
             message = "Shortened URL for the requested URL already exists."
         else:
+            print(user)
             if user is not None:
                 shortened_url = createNewShortenedUrl(db, request_url, user.id)
                 message = "Requested URL has been shortened."

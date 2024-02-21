@@ -19,8 +19,9 @@ class CreateUserResponseDTO(BaseModel):
 
 
 class GetUserResponseDTO(BaseModel):
-    id: int
-    username: str
+    is_valid: bool
+    id: Optional[int]
+    username: Optional[str]
 
 
 class GetAllShortenedUrlsDTO(BaseModel):

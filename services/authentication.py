@@ -19,6 +19,7 @@ ALGORITHM = os.environ.get("ALGORITHM")
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth_bearer = OAuth2PasswordBearer(tokenUrl="user/login")
+optional_oauth_bearer = OAuth2PasswordBearer(tokenUrl="user/login", auto_error=False)
 
 
 def checkExistingUser(username: str, db: Session) -> bool:
@@ -69,9 +70,7 @@ def createAccessToken(user: User, expires_in: int) -> str:
     return encoded_jwt
 
 
-def getCurrentUser(
-    token: Annotated[str, Depends(oauth_bearer)]
-) -> Optional[GetUserResponseDTO]:
+def getCurrentUser(token: Annotated[str, Depends(oauth_bearer)]) -> GetUserResponseDTO:
     """
     Middleware function of the application to check whether the user is authenticated or not.
 
@@ -94,7 +93,41 @@ def getCurrentUser(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Access token has expired. Please login again.",
             )
-        return GetUserResponseDTO(id=user_id, username=username)
+        return GetUserResponseDTO(is_valid=True, id=user_id, username=username)
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate user.",
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"{e}")
+
+
+def getOptionalCurrentUser(
+    token: str | None = Depends(optional_oauth_bearer),
+) -> GetUserResponseDTO | None:
+    """
+    Optional middleware function of the application to check whether the user is authenticated or not.
+
+    Returns the user's id and username if access token is valid, else returns None.
+    """
+    try:
+        if token:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            username: str = payload.get("sub")
+            user_id: int = payload.get("id")
+            exp: int = payload.get("exp")
+
+            if datetime.utcnow() > datetime.utcfromtimestamp(exp):
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Access token has expired. Please login again.",
+                )
+            return GetUserResponseDTO(is_valid=True, id=user_id, username=username)
+        else:
+            return None
 
     except JWTError:
         raise HTTPException(
